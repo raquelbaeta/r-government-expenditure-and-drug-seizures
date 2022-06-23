@@ -1,6 +1,5 @@
 ---
-title: "Research Report 3:"
-subtitle: "Multiple Regression and Causal Analysis"
+title: "Multiple Regression and Causal Analysis"
 author: "Raquel Baeta"
 date: '2022-06-12'
 output: html_document
@@ -9,8 +8,6 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
-
-***
 
 ```{r load_packages}
 library(readr)
@@ -39,10 +36,11 @@ head(df_2017) # first few rows
 summary(df_2017) # summary 
 ```
 
+####
+# Univariate analysis 
+####
 
-#### Univariate analysis 
-
-Figure 1: A bar plot of the raw variable of ‘government expenditure’ from the World Bank.
+# Figure 1: A bar plot of the raw variable of ‘government expenditure’ from the World Bank.
 
 ```{r raw_barplot_exp, include=TRUE}
 barplot(df_2017$exp,
@@ -51,8 +49,7 @@ barplot(df_2017$exp,
         main = "Government Expenditure: A brief overview")
 ```
 
-
-Figure 2: A bar plot of the raw variable ‘gdp’ from the World Bank.
+# Figure 2: A bar plot of the raw variable ‘gdp’ from the World Bank.
 
 ```{r raw_barplot_gdp, include=TRUE}
 barplot(df_2017$gdp,
@@ -61,8 +58,7 @@ barplot(df_2017$gdp,
         main = "Gross Domestic Product (GDP): A Brief overview")
 ```
 
-
-Figure 3: A bar plot of ‘all_drugs’ that includes cannabis, cocaine and opioid seizures from the UNODC.
+# Figure 3: A bar plot of ‘all_drugs’ that includes cannabis, cocaine and opioid seizures from the UNODC.
 
 ```{r raw_barplot_alldrugs, include=TRUE}
 barplot(df_2017$all_drugs,
@@ -71,8 +67,7 @@ barplot(df_2017$all_drugs,
         main = "All drugs: A Brief overview")
 ```
 
-
-Figure 4: A bar plot of the variable ‘un1’ of number of states that have signed (0) or haven’t signed (1). 
+# Figure 4: A bar plot of the variable ‘un1’ of number of states that have signed (0) or haven’t signed (1). 
 
 ```{r un1_histo, include=TRUE}
 # un1
@@ -96,11 +91,13 @@ signed <- df_2017[which(df_2017$un1 == "1"),]
 not_signed <- df_2017[which(df_2017$un1 == "0"),]
 ```
 
-***
+####
+####
+# Transfromed variables
+####
+####
 
-##### Transfromed variables
-
-Figure 5: A bar plot of the transformed variable of ‘government expenditure’ from the World Bank.
+# Figure 5: A bar plot of the transformed variable of ‘government expenditure’ from the World Bank.
 
 ```{r transfromed_exp_barplot}
 barplot(df_2017$exp_ln,
@@ -109,8 +106,7 @@ barplot(df_2017$exp_ln,
         main = "Government Expenditure (ln): A brief overview")
 ```
 
-
-Figure 6: A bar plot of the transformed variable of ‘gdp’ from the World Bank.
+# Figure 6: A bar plot of the transformed variable of ‘gdp’ from the World Bank.
 
 ```{r transformed_gdp_barplot}
 barplot(df_2017$gdp_ln,
@@ -125,9 +121,11 @@ summary(df_2017$exp_ln) # government expenditure
 summary(df_2017$gdp_ln) # gross domestic product 
 ```
 
-***
-
-#### Bivariate analysis 
+####
+####
+# Bivariate analysis 
+####
+####
 
 ```{r dataframe_correlation_matrix}
 drugsdf <- subset(df_2017, select = c(exp_ln, all_drugs, gdp_ln, un1) )
@@ -137,8 +135,7 @@ drugsdf <- subset(df_2017, select = c(exp_ln, all_drugs, gdp_ln, un1) )
 drugs.cor = cor(drugsdf)
 ```
 
-
-Figure 7: A correlation matrix of variables: ‘government expenditure’, ‘all drugs’, ‘gdp’, and ‘un1’.
+# Figure 7: A correlation matrix of variables: ‘government expenditure’, ‘all drugs’, ‘gdp’, and ‘un1’.
 
 ```{r correlation_matrix_plot}
 corrplot(drugs.cor)
@@ -149,39 +146,40 @@ correlation.matrix <- cor(drugsdf[,c("all_drugs","exp_ln","gdp_ln", "un1")])
 stargazer(correlation.matrix, title="Correlation Matrix", type = "html")
 ```
 
-
-Figure 8: A scatterplot matrix of variables: ‘government expenditure’, ‘all drugs’, ‘gdp’, and ‘un1’.
+# Figure 8: A scatterplot matrix of variables: ‘government expenditure’, ‘all drugs’, ‘gdp’, and ‘un1’.
 
 ```{r scatterplot_matrix}
 plot(drugsdf, main = "Scatterplot matrix of all variables")
 ```
 
-***
+####
+####
+# Effect decomposition
+####
+####
 
-#### Effect decomposition
-
-A bivariate regression: 'all drugs' and 'government expenditure'
+# A bivariate regression: 'all drugs' and 'government expenditure'
 
 ```{r bivariate_drugs_exp}
 lm.out <- summary(lm(all_drugs ~  exp_ln, data=drugsdf))
 lm.out
 ```
 
-A multiple regression: 'all drugs', 'government expenditure' and 'GDP'
+# A multiple regression: 'all drugs', 'government expenditure' and 'GDP'
 
 ```{r multiple_drugs_exp_gdp}
 lm.out2 <- lm(all_drugs ~  exp_ln + gdp_ln, data=drugsdf)
 summary(lm.out)
 ```
 
-A multiple regression: 'all drugs', 'government expenditure' and 'United Nations Drug Control Treaty'
+# A multiple regression: 'all drugs', 'government expenditure' and 'United Nations Drug Control Treaty'
 
 ```{r mulitple_drugs_exp_un}
 lm.out3 <- lm(all_drugs ~  exp_ln + un1, data=drugsdf)
 summary(lm.out3)
 ```
 
-A multiple regression: 'all drugs', 'government expenditure', 'GDP' and 'United Nations Drug Control Treaty'
+# A multiple regression: 'all drugs', 'government expenditure', 'GDP' and 'United Nations Drug Control Treaty'
 
 ```{r mulitple_drugs_exp_gdp_un}
 lm.out4 <- lm(all_drugs ~  exp_ln + gdp_ln + un1, data=drugsdf)
@@ -206,7 +204,3 @@ par(mfrow=c(2,2)) # splits window
 plot(lm.out4, cex.caption=0.6, cex.id=0.6,
      main = "Regression Plot")
 ```
-
-
-
-
